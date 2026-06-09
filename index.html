@@ -3,262 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Esports Typing Arena</title>
+    <title>Pro Esports Typing Arena - Portal</title>
     <style>
         :root {
-            --bg-color: #0a0a12;
-            --panel-bg: #121225;
+            --bg-color: #05050b;
+            --panel-bg: #0f0f1e;
             --neon-cyan: #00f2fe;
             --neon-pink: #fe019a;
-            --text-color: #e0e0ff;
+            --text: #e0e0ff;
         }
-
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; box-sizing: border-box;
         }
-
-        header {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: #fff;
-            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            color: var(--neon-pink);
-            text-shadow: 0 0 5px var(--neon-pink);
-            font-weight: bold;
-            font-size: 1rem;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
+        .auth-container, .game-container {
+            width: 90%; max-width: 450px;
             background: var(--panel-bg);
             border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 30px;
-            box-sizing: border-box;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+            border-radius: 12px; padding: 30px; margin-top: 50px;
+            box-sizing: border-box; display: none;
         }
-
-        .stats-bar {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--neon-pink);
+        .active { display: block; }
+        h2 {
+            text-align: center; text-transform: uppercase; letter-spacing: 2px;
+            color: #fff; text-shadow: 0 0 10px var(--neon-cyan);
         }
-
-        .stat-box {
-            text-align: center;
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #8888aa; }
+        input {
+            width: 100%; padding: 12px; background: #161632; border: 1px solid #333366;
+            color: #fff; border-radius: 6px; outline: none; box-sizing: border-box;
         }
-
-        .stat-val {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .stat-lbl {
-            font-size: 0.8rem;
-            color: #8888aa;
-            text-transform: uppercase;
-        }
-
-        .word-display {
-            font-size: 1.5rem;
-            line-height: 2rem;
-            background: #05050a;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            min-height: 80px;
-            letter-spacing: 1px;
-            border: 1px solid #222244;
-        }
-
-        .current-word {
-            color: var(--neon-cyan);
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        .input-area {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.3rem;
-            background: #1a1a3a;
-            border: 2px solid #333366;
-            color: #fff;
-            border-radius: 8px;
-            outline: none;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
-
-        .input-area:focus {
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 10px rgba(254, 1, 154, 0.5);
-        }
-
+        input:focus { border-color: var(--neon-pink); box-shadow: 0 0 8px rgba(254, 1, 154, 0.4); }
         .btn {
-            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            margin-top: 15px;
-            width: 100%;
+            width: 100%; padding: 12px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
+            border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
         }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
+        .toggle-link { text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--neon-cyan); cursor: pointer; }
+        
+        /* Game Screen Specific */
+        .game-container { max-width: 700px; }
+        .stats { display: flex; justify-content: space-between; background: #000; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .word-box { font-size: 1.4rem; padding: 20px; background: #070714; border-radius: 6px; margin-bottom: 20px; text-align: center; min-height: 50px; }
+        .current { color: var(--neon-pink); font-weight: bold; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Neon Arena</h1>
-        <div class="subtitle">Pro Esports Typing Speed Test</div>
-    </header>
-
-    <div class="container">
-        <div class="stats-bar">
-            <div class="stat-box">
-                <div class="stat-val" id="wpm">0</div>
-                <div class="stat-lbl">WPM (Speed)</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-val" id="accuracy">100%</div>
-                <div class="stat-lbl">Accuracy</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-val" id="timer">60</div>
-                <div class="stat-lbl">Time Left (s)</div>
-            </div>
+    <div id="authBox" class="auth-container active">
+        <h2 id="authTitle">Esports Login</h2>
+        <div class="form-group" id="usernameGroup" style="display: none;">
+            <label>Esports Tag (Username)</label>
+            <input type="text" id="username" placeholder="Enter unique gamer tag">
         </div>
-
-        <div class="word-display" id="wordsScreen">
-            Loading arena words...
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="Enter email">
         </div>
+        <div class="form-group">
+            <label>Security Password</label>
+            <input type="password" id="password" placeholder="Enter password">
+        </div>
+        <button class="btn" id="authBtn">Enter Arena</button>
+        <div class="toggle-link" id="toggleMode">New Player? Register Account</div>
+    </div>
 
-        <input type="text" class="input-area" id="typingInput" placeholder="Type the words here to start match..." disabled>
-        
-        <button class="btn" id="startBtn">Start Esports Match</button>
+    <div id="gameBox" class="game-container">
+        <h2>Typing Arena Active</h2>
+        <div id="welcomeGamer" style="text-align: center; color: var(--neon-cyan); margin-bottom: 15px; font-weight: bold;"></div>
+        <div class="stats">
+            <div>SPEED: <span id="wpm" style="color:#fff; font-weight:bold;">0</span> WPM</div>
+            <div>TIME: <span id="timer" style="color:#fff; font-weight:bold;">60</span>s</div>
+        </div>
+        <div class="word-box" id="wordDisplay">Loading match text...</div>
+        <input type="text" id="typingInput" class="input-area" style="width:100%; padding:15px; font-size:1.2rem; background:#161632; border:1px solid #333366; color:#fff; border-radius:6px;" placeholder="Type the word and press Space..." disabled>
+        <button class="btn" id="startBtn" style="margin-top:20px;">Start Official Match</button>
     </div>
 
     <script>
-        // AAPKI LIVE BACKEND LINK
         const BACKEND_URL = "https://pro-esports-typing-arena.onrender.com";
-        
-        const wordsList = ["neon", "esports", "velocity", "clutch", "tournament", "frag", "quadra", "apex", "reflex", "hyper", "cyber", "glitch", "database", "server", "cluster", "matrix", "quantum", "vector"];
-        
+        let isLoginMode = true;
+        let authToken = "";
+        let gamerTag = "";
+
+        // Game Variables
+        const words = ["database", "authentication", "encryption", "server", "javascript", "mongodb", "cluster", "repository", "backend", "deployment", "terminal", "request", "token", "payload"];
+        let currentWordIndex = 0;
         let timer = 60;
         let score = 0;
         let isPlaying = false;
-        let currentWordIndex = 0;
         let intervalId;
 
-        const wordsScreen = document.getElementById('wordsScreen');
+        // DOM Elements
+        const authBox = document.getElementById('authBox');
+        const gameBox = document.getElementById('gameBox');
+        const authTitle = document.getElementById('authTitle');
+        const usernameGroup = document.getElementById('usernameGroup');
+        const authBtn = document.getElementById('authBtn');
+        const toggleMode = document.getElementById('toggleMode');
+        const welcomeGamer = document.getElementById('welcomeGamer');
+        
+        const wordDisplay = document.getElementById('wordDisplay');
         const typingInput = document.getElementById('typingInput');
         const timerTxt = document.getElementById('timer');
         const wpmTxt = document.getElementById('wpm');
         const startBtn = document.getElementById('startBtn');
 
-        function renderWords() {
-            wordsScreen.innerHTML = wordsList.map((word, index) => {
-                if(index === currentWordIndex) return `<span class="current-word">${word}</span>`;
-                return `<span>${word}</span>`;
+        // Toggle Login / Register
+        toggleMode.addEventListener('click', () => {
+            isLoginMode = !isLoginMode;
+            if (isLoginMode) {
+                authTitle.innerText = "Esports Login";
+                usernameGroup.style.display = "none";
+                toggleMode.innerText = "New Player? Register Account";
+                authBtn.innerText = "Enter Arena";
+            } else {
+                authTitle.innerText = "Register Gamer";
+                usernameGroup.style.display = "block";
+                toggleMode.innerText = "Already registered? Login here";
+                authBtn.innerText = "Create Account";
+            }
+        });
+
+        // Auth API Integration (Connects to your real Node/Mongo Backend)
+        authBtn.addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const username = document.getElementById('username').value.trim();
+
+            if(!email || !password || (!isLoginMode && !username)) {
+                alert("Please fill all required credentials!");
+                return;
+            }
+
+            const endpoint = isLoginMode ? "/api/auth/login" : "/api/auth/register";
+            const payload = isLoginMode ? { email, password } : { username, email, password };
+
+            try {
+                authBtn.innerText = "Connecting to Cluster...";
+                const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.message || "Authentication Failed");
+
+                // Save Token & Setup Dashboard
+                authToken = data.token;
+                gamerTag = data.user?.username || username || "Esports Player";
+                
+                authBox.classList.remove('active');
+                gameBox.classList.add('active');
+                welcomeGamer.innerText = `🎮 WELCOME, ${gamerTag.toUpperCase()} 🎮`;
+                wordDisplay.innerText = "Press Start Match below when ready.";
+
+            } catch (err) {
+                alert(err.message);
+                authBtn.innerText = isLoginMode ? "Enter Arena" : "Create Account";
+            }
+        });
+
+        // GAME LOGIC
+        function showWords() {
+            wordDisplay.innerHTML = words.map((w, idx) => {
+                if(idx === currentWordIndex) return `<span class="current">${w}</span>`;
+                return `<span>${w}</span>`;
             }).join(' ');
         }
 
         startBtn.addEventListener('click', () => {
             if(isPlaying) return;
             isPlaying = true;
-            timer = 60;
-            score = 0;
-            currentWordIndex = 0;
-            typingInput.disabled = false;
-            typingInput.value = '';
-            typingInput.focus();
-            wpmTxt.innerText = '0';
-            timerTxt.innerText = timer;
-            startBtn.innerText = "Match in Progress...";
-            
-            renderWords();
-            
+            timer = 60; score = 0; currentWordIndex = 0;
+            typingInput.disabled = false; typingInput.value = ''; typingInput.focus();
+            timerTxt.innerText = timer; wpmTxt.innerText = '0';
+            startBtn.innerText = "Match Live...";
+            showWords();
+
             intervalId = setInterval(() => {
                 timer--;
                 timerTxt.innerText = timer;
-                if(timer <= 0) {
-                    endGame();
-                }
+                if(timer <= 0) endArenaMatch();
             }, 1000);
         });
 
         typingInput.addEventListener('input', () => {
-            let currentWord = wordsList[currentWordIndex];
-            let typedText = typingInput.value.trim();
+            let currentWord = words[currentWordIndex];
+            let typed = typingInput.value.trim();
 
-            if(typedText === currentWord) {
+            if(typed === currentWord) {
                 score++;
                 currentWordIndex++;
                 typingInput.value = '';
-                
                 let calculatedWpm = Math.round((score / (60 - timer)) * 60);
                 wpmTxt.innerText = isFinite(calculatedWpm) ? calculatedWpm : score;
 
-                if(currentWordIndex >= wordsList.length) {
-                    currentWordIndex = 0; // Loop words
-                }
-                renderWords();
+                if(currentWordIndex >= words.length) currentWordIndex = 0;
+                showWords();
             }
         });
 
-        function endGame() {
+        async function endArenaMatch() {
             clearInterval(intervalId);
             isPlaying = false;
             typingInput.disabled = true;
-            startBtn.innerText = "Start Esports Match";
-            alert(`Match Over! Your Final Speed: ${wpmTxt.innerText} WPM`);
-            
-            // SEND SCORE TO YOUR LIVE BACKEND
-            fetch(`${BACKEND_URL}/api/scores`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ score: parseInt(wpmTxt.innerText) })
-            })
-            .then(res => console.log("Score saved to MongoDB!"))
-            .catch(err => console.error("Error saving score:", err));
-        }
+            startBtn.innerText = "Start Official Match";
+            const finalWpm = parseInt(wpmTxt.innerText);
+            alert(`Match Finished! Speed: ${finalWpm} WPM`);
 
-        // Initial Load
-        wordsScreen.innerHTML = "Click the button below to start the battle!";
+            // Secure Token Authorization header check
+            try {
+                await fetch(`${BACKEND_URL}/api/scores`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ score: finalWpm })
+                });
+                console.log("Score securely committed to MongoDB cluster.");
+            } catch (err) {
+                console.error("Failed syncing score:", err);
+            }
+        }
     </script>
 </body>
 </html>
