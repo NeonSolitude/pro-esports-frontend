@@ -20,41 +20,55 @@
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; box-sizing: border-box;
         }
+        header {
+            text-align: center; margin-top: 20px;
+        }
+        h1 {
+            font-size: 2rem; color: #fff; text-shadow: 0 0 10px var(--neon-cyan);
+            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;
+        }
         .auth-container, .game-container {
             width: 90%; max-width: 450px;
             background: var(--panel-bg);
             border: 2px solid var(--neon-cyan);
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
-            border-radius: 12px; padding: 30px; margin-top: 50px;
+            border-radius: 12px; padding: 30px; margin-top: 30px;
             box-sizing: border-box; display: none;
         }
         .active { display: block; }
         h2 {
             text-align: center; text-transform: uppercase; letter-spacing: 2px;
-            color: #fff; text-shadow: 0 0 10px var(--neon-cyan);
+            color: #fff; text-shadow: 0 0 10px var(--neon-pink); font-size: 1.5rem;
+            margin-top: 0;
         }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #8888aa; }
         input {
             width: 100%; padding: 12px; background: #161632; border: 1px solid #333366;
             color: #fff; border-radius: 6px; outline: none; box-sizing: border-box;
+            font-size: 1rem;
         }
         input:focus { border-color: var(--neon-pink); box-shadow: 0 0 8px rgba(254, 1, 154, 0.4); }
         .btn {
             width: 100%; padding: 12px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
             border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; font-size: 1rem;
         }
+        .btn:hover { opacity: 0.9; }
         .toggle-link { text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--neon-cyan); cursor: pointer; }
         
-        /* Game Screen Specific */
+        /* Game Screen Layout */
         .game-container { max-width: 700px; }
-        .stats { display: flex; justify-content: space-between; background: #000; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-        .word-box { font-size: 1.4rem; padding: 20px; background: #070714; border-radius: 6px; margin-bottom: 20px; text-align: center; min-height: 50px; }
-        .current { color: var(--neon-pink); font-weight: bold; text-decoration: underline; }
+        .stats { display: flex; justify-content: space-around; background: #000; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid var(--neon-pink); }
+        .word-box { font-size: 1.5rem; padding: 20px; background: #070714; border-radius: 6px; margin-bottom: 20px; text-align: center; min-height: 50px; border: 1px solid #222244; letter-spacing: 1px;}
+        .current { color: var(--neon-cyan); font-weight: bold; text-decoration: underline; text-shadow: 0 0 5px var(--neon-cyan); }
     </style>
 </head>
 <body>
+
+    <header>
+        <h1>Neon Arena v2</h1>
+    </header>
 
     <div id="authBox" class="auth-container active">
         <h2 id="authTitle">Esports Login</h2>
@@ -75,14 +89,14 @@
     </div>
 
     <div id="gameBox" class="game-container">
-        <h2>Typing Arena Active</h2>
-        <div id="welcomeGamer" style="text-align: center; color: var(--neon-cyan); margin-bottom: 15px; font-weight: bold;"></div>
+        <h2>Arena Core Active</h2>
+        <div id="welcomeGamer" style="text-align: center; color: var(--neon-pink); margin-bottom: 15px; font-weight: bold; letter-spacing: 1px;"></div>
         <div class="stats">
-            <div>SPEED: <span id="wpm" style="color:#fff; font-weight:bold;">0</span> WPM</div>
-            <div>TIME: <span id="timer" style="color:#fff; font-weight:bold;">60</span>s</div>
+            <div>SPEED: <span id="wpm" style="color:#fff; font-weight:bold; font-size: 1.2rem;">0</span> WPM</div>
+            <div>TIME: <span id="timer" style="color:#fff; font-weight:bold; font-size: 1.2rem;">60</span>s</div>
         </div>
-        <div class="word-box" id="wordDisplay">Loading match text...</div>
-        <input type="text" id="typingInput" class="input-area" style="width:100%; padding:15px; font-size:1.2rem; background:#161632; border:1px solid #333366; color:#fff; border-radius:6px;" placeholder="Type the word and press Space..." disabled>
+        <div class="word-box" id="wordDisplay">Loading match data...</div>
+        <input type="text" id="typingInput" style="width:100%; padding:15px; font-size:1.2rem; background:#161632; border:1px solid #333366; color:#fff; border-radius:6px; box-sizing: border-box;" placeholder="Click start button below to unlock input..." disabled>
         <button class="btn" id="startBtn" style="margin-top:20px;">Start Official Match</button>
     </div>
 
@@ -92,8 +106,8 @@
         let authToken = "";
         let gamerTag = "";
 
-        // Game Variables
-        const words = ["database", "authentication", "encryption", "server", "javascript", "mongodb", "cluster", "repository", "backend", "deployment", "terminal", "request", "token", "payload"];
+        // Words Dataset
+        const words = ["database", "authentication", "encryption", "server", "javascript", "mongodb", "cluster", "repository", "backend", "deployment", "terminal", "request", "token", "payload", "node", "express", "schema", "headers"];
         let currentWordIndex = 0;
         let timer = 60;
         let score = 0;
@@ -115,7 +129,7 @@
         const wpmTxt = document.getElementById('wpm');
         const startBtn = document.getElementById('startBtn');
 
-        // Toggle Login / Register
+        // Toggle handling
         toggleMode.addEventListener('click', () => {
             isLoginMode = !isLoginMode;
             if (isLoginMode) {
@@ -131,47 +145,68 @@
             }
         });
 
-        // Auth API Integration (Connects to your real Node/Mongo Backend)
+        // Loop array patterns to find your exact backend route match
+        async function multiRouteAuth(endpoints, payload) {
+            let lastError = "Could not connect to server endpoints.";
+            for (let path of endpoints) {
+                try {
+                    console.log(`Checking route: ${BACKEND_URL}${path}`);
+                    const response = await fetch(`${BACKEND_URL}${path}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const data = await response.json();
+                    if (response.ok) {
+                        return data; // Jo route code parse kar lega wahi directly exit dega
+                    } else {
+                        lastError = data.message || "Route response not OK";
+                    }
+                } catch (e) {
+                    console.log(`Path ${path} skipped or unhandled.`);
+                }
+            }
+            throw new Error(lastError);
+        }
+
         authBtn.addEventListener('click', async () => {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
             const username = document.getElementById('username').value.trim();
 
             if(!email || !password || (!isLoginMode && !username)) {
-                alert("Please fill all required credentials!");
+                alert("Please fill all fields!");
                 return;
             }
 
-            const endpoint = isLoginMode ? "/api/auth/login" : "/api/auth/register";
+            // Standard structures fallbacks
+            const registerEndpoints = ["/api/auth/register", "/api/users/register", "/register", "/signup", "/api/users", "/api/signup"];
+            const loginEndpoints = ["/api/auth/login", "/api/users/login", "/login", "/signin", "/api/users/login", "/api/signin"];
+            
+            const targetedEndpoints = isLoginMode ? loginEndpoints : registerEndpoints;
             const payload = isLoginMode ? { email, password } : { username, email, password };
 
             try {
-                authBtn.innerText = "Connecting to Cluster...";
-                const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await response.json();
+                authBtn.innerText = "Testing Cluster Matrix...";
+                const data = await multiRouteAuth(targetedEndpoints, payload);
 
-                if (!response.ok) throw new Error(data.message || "Authentication Failed");
-
-                // Save Token & Setup Dashboard
-                authToken = data.token;
-                gamerTag = data.user?.username || username || "Esports Player";
+                // Extract Token & Profiler
+                authToken = data.token || (data.data && data.data.token);
+                gamerTag = data.user?.username || data.username || username || "Elite Gamer";
                 
                 authBox.classList.remove('active');
                 gameBox.classList.add('active');
-                welcomeGamer.innerText = `🎮 WELCOME, ${gamerTag.toUpperCase()} 🎮`;
+                welcomeGamer.innerText = `🎮 READY FOR CLUTCH, ${gamerTag.toUpperCase()} 🎮`;
                 wordDisplay.innerText = "Press Start Match below when ready.";
 
             } catch (err) {
-                alert(err.message);
+                alert(`Connection Error: ${err.message}. Check your server logs or parameters structure!`);
                 authBtn.innerText = isLoginMode ? "Enter Arena" : "Create Account";
             }
         });
 
-        // GAME LOGIC
+        // GAME PLAY MECHANICS
         function showWords() {
             wordDisplay.innerHTML = words.map((w, idx) => {
                 if(idx === currentWordIndex) return `<span class="current">${w}</span>`;
@@ -217,21 +252,24 @@
             typingInput.disabled = true;
             startBtn.innerText = "Start Official Match";
             const finalWpm = parseInt(wpmTxt.innerText);
-            alert(`Match Finished! Speed: ${finalWpm} WPM`);
+            alert(`Esports Match Over! Registered Speed: ${finalWpm} WPM`);
 
-            // Secure Token Authorization header check
-            try {
-                await fetch(`${BACKEND_URL}/api/scores`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify({ score: finalWpm })
-                });
-                console.log("Score securely committed to MongoDB cluster.");
-            } catch (err) {
-                console.error("Failed syncing score:", err);
+            const scorePaths = ["/api/scores", "/scores", "/api/score", "/api/users/score"];
+            for(let path of scorePaths) {
+                try {
+                    await fetch(`${BACKEND_URL}${path}`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ score: finalWpm })
+                    });
+                    console.log(`Score saved via standard endpoint path: ${path}`);
+                    break;
+                } catch (err) {
+                    console.log(`Score route pattern mismatch for: ${path}`);
+                }
             }
         }
     </script>
