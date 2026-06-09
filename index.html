@@ -3,215 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Esports Typing Arena</title>
-    <style>
-        :root { --bg: #05050a; --panel: #0d0d1a; --cyan: #00f2fe; --pink: #fe019a; --text: #e2e2ff; }
-        body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .box { width: 90%; max-width: 500px; background: var(--panel); border: 2px solid var(--cyan); border-radius: 12px; padding: 25px; margin-top: 40px; box-sizing: border-box; display: none; box-shadow: 0 0 15px rgba(0,242,254,0.2); }
-        .active { display: block; }
-        h2 { text-align: center; text-transform: uppercase; margin-top: 0; text-shadow: 0 0 10px var(--cyan); color: #fff; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #8a8aaf; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; background: #14142c; border: 1px solid #333366; color: #fff; border-radius: 6px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--pink); box-shadow: 0 0 8px rgba(254,1,154,0.4); }
-        .btn { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--cyan), var(--pink)); border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .link { text-align: center; margin-top: 15px; color: var(--cyan); cursor: pointer; font-size: 0.9rem; }
-        .nav { display: flex; justify-content: space-around; margin-top: 20px; background: #000; padding: 10px; width: 100%; position: fixed; bottom: 0; }
-        .nav-item { color: #8a8aaf; cursor: pointer; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .nav-item.active-nav { color: var(--cyan); text-shadow: 0 0 5px var(--cyan); }
-        .word-box { background: #000; padding: 20px; border-radius: 6px; font-size: 1.3rem; text-align: center; margin-bottom: 15px; border: 1px solid #222244; letter-spacing: 1px; min-height: 40px; }
-        .current-word { color: var(--pink); font-weight: bold; text-decoration: underline; }
-    </style>
+    <title>Esports Captcha Tournament</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
-<body>
+<body class="bg-[#020206] text-slate-200 min-h-screen flex flex-col justify-between font-sans select-none">
 
-    <h1 style="text-align:center; color:#fff; text-shadow:0 0 15px var(--cyan); margin-top:20px; text-transform:uppercase; font-size:1.8rem;">Arena Matrix</h1>
-
-    <div id="authBox" class="box active">
-        <h2 id="authTitle">Gamer Login</h2>
-        <div class="form-group" id="userGroup" style="display:none;">
-            <label>Esports Gamer Tag</label>
-            <input type="text" id="authUsername" placeholder="Unique name">
+    <div id="topHud" class="w-full bg-slate-950 border-b border-cyan-500/10 px-6 py-4 flex justify-between items-center hidden shadow-2xl">
+        <div>
+            <p id="hudGamerTag" class="font-black text-xs tracking-widest text-cyan-400">GAMER</p>
+            <p id="hudUID" class="text-[9px] font-mono text-slate-500 mt-0.5">UID: -</p>
         </div>
-        <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" id="authEmail" placeholder="Enter email">
+        <div class="bg-cyan-950/40 border border-cyan-500/20 px-3 py-1 rounded text-xs font-black text-cyan-400">
+            🪙 Balance: <span id="coinBalanceDisplay">0</span> Coins
         </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="authPassword" placeholder="Enter security key">
-        </div>
-        <button class="btn" id="authSubmitBtn">Initialize Connection</button>
-        <div class="link" id="authToggle">New Player? Create Account</div>
     </div>
 
-    <div id="arenaBox" class="box">
-        <h2>Typing Arena</h2>
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; background:#000; padding:10px; border-radius:4px;">
-            <div>WPM: <span id="liveWpm" style="color:var(--cyan)">0</span></div>
-            <div>TIME: <span id="liveTimer" style="color:var(--pink)">60</span>s</div>
+    <div class="w-full max-w-md mx-auto px-4 flex-grow flex flex-col justify-center items-center my-4">
+        
+        <div id="screenAuth" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent uppercase">NEON ARENA v3</h1>
+            
+            <div id="signupBox" class="space-y-3">
+                <input type="text" id="regTag" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm" placeholder="CREATE GAMER TAG">
+                <input type="password" id="regPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest" placeholder="4-DIGIT SECURE PIN">
+                <button id="btnSignup" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest text-white">Create Account</button>
+                <p id="toggleToLogin" class="text-xs text-cyan-400 cursor-pointer underline pt-2">Already Registered? Login here</p>
+            </div>
+
+            <div id="loginBox" class="space-y-3 hidden">
+                <input type="text" id="loginUid" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-mono text-sm tracking-wide" placeholder="ENTER YOUR 12-DIGIT UID">
+                <input type="password" id="loginPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest" placeholder="4-DIGIT PIN">
+                <button id="btnLogin" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl font-black text-xs uppercase tracking-widest text-white">Access Portal</button>
+                <p id="toggleToSignup" class="text-xs text-pink-500 cursor-pointer underline pt-2">New Player? Register Account</p>
+            </div>
         </div>
-        <div class="word-box" id="arenaWordDisplay">Click Start Match Below...</div>
-        <input type="text" id="arenaInput" placeholder="Secure typing field..." disabled>
-        <button class="btn" id="arenaStartBtn">Start Official Match</button>
+
+        <div id="screenLobby" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center space-y-6 shadow-2xl hidden">
+            <div>
+                <h2 class="text-2xl font-black text-white uppercase tracking-wider">100-Player Lobby</h2>
+                <p class="text-[10px] tracking-widest text-slate-500 uppercase font-black mt-1">Unified Speed Rules Apply</p>
+            </div>
+            
+            <div class="space-y-3">
+                <input type="text" id="roomCodeInput" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-mono font-bold text-sm tracking-widest" placeholder="ENTER LOBBY CODE">
+                <button id="btnJoinTournament" class="w-full py-4 bg-cyan-500 rounded-xl font-black text-xs uppercase tracking-widest text-black shadow-lg">Join Tournament Room</button>
+                <button id="btnAdminTrigger" class="w-full py-4 bg-emerald-600 rounded-xl font-black text-xs uppercase tracking-widest text-white hidden">Launch Match (Admin Only)</button>
+            </div>
+            
+            <p id="lobbyStatus" class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Enter Room Token to sync device spectrum</p>
+        </div>
+
+        <div id="screenBattle" class="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl hidden">
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <p class="text-[9px] text-cyan-400 font-black uppercase">Cleared Captchas</p>
+                    <p class="text-2xl font-black text-white mt-1"><span id="myCounter">0</span></p>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 border-l-2 border-l-pink-500">
+                    <p class="text-[9px] text-pink-500 font-black uppercase">Lobby Live Leader</p>
+                    <p id="liveLeader" class="text-xs font-black text-pink-400 mt-2 truncate">Updating...</p>
+                </div>
+            </div>
+
+            <div class="relative bg-slate-950 border-2 border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center min-h-[100px] overflow-hidden">
+                <div id="captchaDisplay" class="text-4xl font-black tracking-[0.3em] text-white italic font-mono uppercase">LOBBY COUNTDOWN...</div>
+            </div>
+
+            <input type="text" id="battleTyper" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-black text-2xl text-white tracking-widest uppercase" placeholder="TYPE CAPTCHA EXACTLY..." autocomplete="off" disabled>
+            
+            <div class="flex justify-between items-center text-[10px] font-black tracking-wider text-slate-500 uppercase px-2">
+                <span id="matchClock">TIME: 60s</span>
+                <span>⚠️ TYPING INCORRECT CODE = DISQUALIFIED</span>
+            </div>
+        </div>
+
+        <div id="screenWallet" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl hidden">
+            <h2 class="text-xl font-black text-center text-white uppercase tracking-wider">Financial Transaction Engine</h2>
+            
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-3">
+                <p class="text-xs font-black text-cyan-400 uppercase tracking-widest">Deposit System (1 INR = 100 Coins)</p>
+                <div class="w-40 h-56 mx-auto border-2 border-dashed border-slate-800 rounded-lg flex flex-col justify-center items-center bg-slate-900/50 p-2 overflow-hidden">
+                    <img src="https://i.imgur.com/HnUqbyP.png" alt="Paytm QR" class="w-full h-full object-contain rounded">
+                </div>
+                <p class="text-[10px] font-mono text-slate-400">UPI Address: <span class="text-white font-bold">vishah504@ptyes</span></p>
+                <input type="number" id="depAmount" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-bold text-sm" placeholder="Enter Deposited INR Amount">
+                <button id="btnSubmitDeposit" class="w-full py-2.5 bg-cyan-600 rounded-lg font-black text-xs uppercase tracking-wider text-white">Notify Owner of Deposit</button>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-3">
+                <p class="text-xs font-black text-pink-500 uppercase tracking-widest">Secure Outflow Cashout</p>
+                <input type="number" id="withAmount" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-bold text-sm" placeholder="Enter INR Amount to Cashout">
+                <input type="text" id="withUpi" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-mono text-xs" placeholder="Your Receiving UPI ID (e.g. name@paytm)">
+                <button id="btnSubmitWithdraw" class="w-full py-2.5 bg-pink-600 rounded-lg font-black text-xs uppercase tracking-wider text-white">Request Cashout Approval</button>
+            </div>
+        </div>
+
     </div>
 
-    <div id="walletBox" class="box">
-        <h2>Esports Wallet</h2>
-        <div style="text-align:center; margin-bottom:20px; background:#000; padding:15px; border-radius:6px; border:1px solid var(--cyan);">
-            <div style="color:#8a8aaf; font-size:0.8rem; text-transform:uppercase;">Current Balance</div>
-            <div style="font-size:2rem; font-weight:bold; color:#fff; margin-top:5px;"><span id="walletBal">0</span> <span style="font-size:1rem; color:var(--pink)">COINS</span></div>
-        </div>
-        <div class="form-group">
-            <label>Amount (Coins)</label>
-            <input type="number" id="walletAmount" placeholder="Enter coins">
-        </div>
-        <button class="btn" id="depositBtn" style="background:var(--cyan); color:#000;">Request Deposit</button>
-        <button class="btn" id="withdrawBtn" style="background:transparent; border:1px solid var(--pink); color:var(--pink);">Request Withdrawal</button>
-    </div>
-
-    <div id="navigationBar" class="nav" style="display:none;">
-        <div class="nav-item active-nav" id="navArena">Arena</div>
-        <div class="nav-item" id="navWallet">Wallet</div>
-        <div class="nav-item" id="navLogout">Logout</div>
+    <div id="hudNavigation" class="w-full bg-slate-950/90 border-t border-slate-800 py-4 px-8 flex justify-around items-center hidden sticky bottom-0 z-50">
+        <button id="navArena" class="text-xs uppercase font-black tracking-widest text-cyan-400">Tournament</button>
+        <button id="navWallet" class="text-xs uppercase font-black tracking-widest text-slate-500">Wallet HUD</button>
     </div>
 
     <script>
-        const BACKEND = "https://pro-esports-typing-arena.onrender.com";
-        let token = "", isLogin = true, words = [], currentIdx = 0, score = 0, timer = 60, isPlaying = false, interval;
-        const matchId = "MATCH_" + Math.floor(Math.random() * 100000);
+        const API_URL = "http://localhost:5000"; // Replace with your live deploy node URL
+        const socket = io(API_URL);
 
-        // UI Switches
-        const showBox = (id) => { document.querySelectorAll('.box').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); };
-        
-        // Navigation Setup
-        document.getElementById('navArena').addEventListener('click', () => { showBox('arenaBox'); setActiveNav('navArena'); });
-        document.getElementById('navWallet').addEventListener('click', () => { showBox('walletBox'); setActiveNav('navWallet'); });
-        document.getElementById('navLogout').addEventListener('click', () => { localStorage.clear(); location.reload(); });
-        function setActiveNav(id) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-nav')); document.getElementById(id).classList.add('active-nav'); }
+        let currentUser = null, tournamentCode = "", seedIndex = 1, currentCode = "", totalSolved = 0, clock = 60, clockIntervalId, activeBattleState = false;
 
-        // Auth Form Toggle
-        document.getElementById('authToggle').addEventListener('click', () => {
-            isLogin = !isLogin;
-            document.getElementById('authTitle').innerText = isLogin ? "Gamer Login" : "Register Account";
-            document.getElementById('userGroup').style.display = isLogin ? "none" : "block";
-            document.getElementById('authToggle').innerText = isLogin ? "New Player? Create Account" : "Already registered? Login here";
-        });
-
-        // AUTH OPERATION (HANDBOOK SECTION 3.A)
-        document.getElementById('authSubmitBtn').addEventListener('click', async () => {
-            const email = document.getElementById('authEmail').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            const username = document.getElementById('authUsername').value.trim();
-
-            const path = isLogin ? "/api/auth/login" : "/api/auth/register";
-            const payload = isLogin ? { email, password } : { username, email, password };
-
-            try {
-                const res = await fetch(`${BACKEND}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const data = await res.json();
-                if(!res.ok) throw new Error(data.message);
-
-                token = data.token;
-                document.getElementById('walletBal').innerText = data.user.wallet_balance;
-                document.getElementById('navigationBar').style.display = "flex";
-                showBox('arenaBox');
-            } catch (err) { alert(err.message); }
-        });
-
-        // 🛡️ ANTI-CHEAT LOGIC GATEWAY (HANDBOOK SECTION 3.B)
-        const triggerDisqualification = async (reason) => {
-            if(!isPlaying) return;
-            clearInterval(interval); isPlaying = false;
-            document.getElementById('arenaInput').disabled = true;
-            document.getElementById('arenaStartBtn').innerText = "DISQUALIFIED";
-            alert(`🚨 DISQUALIFIED: ${reason}`);
-
-            await fetch(`${BACKEND}/api/game/submit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ matchId, wpm: 0, status: 'DISQUALIFIED', cheatReason: reason })
-            });
-        };
-
-        // Window event hooks
-        window.addEventListener('blur', () => triggerDisqualification('Tab Switch Detected'));
-        document.addEventListener('visibilitychange', () => { if(document.hidden) triggerDisqualification('Background Minimization'); });
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => { if(e.ctrlKey && (e.key === 'c' || e.key === 'v')) { e.preventDefault(); triggerDisqualification('Copy-Paste Violation'); } });
-
-        // GAMEPLAY CYCLE ENGINE
-        function renderArenaWords() {
-            document.getElementById('arenaWordDisplay').innerHTML = words.map((w, i) => i === currentIdx ? `<span class="current-word">${w}</span>` : `<span>${w}</span>`).join(' ');
+        function view(id) {
+            ['screenAuth', 'screenLobby', 'screenBattle', 'screenWallet'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        document.getElementById('arenaStartBtn').addEventListener('click', async () => {
-            if(isPlaying) return;
+        // HUD View Switchers
+        document.getElementById('navArena').addEventListener('click', () => { view('screenLobby'); updateHudTabs('navArena'); });
+        document.getElementById('navWallet').addEventListener('click', () => { view('screenWallet'); updateHudTabs('navWallet'); });
+        
+        function updateHudTabs(activeId) {
+            ['navArena', 'navWallet'].forEach(id => document.getElementById(id).className = "text-xs uppercase font-black tracking-widest text-slate-500");
+            document.getElementById(activeId).className = "text-xs uppercase font-black tracking-widest text-cyan-400";
+        }
+
+        // View Toggling Form Array Logic
+        document.getElementById('toggleToLogin').addEventListener('click', () => { document.getElementById('signupBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); });
+        document.getElementById('toggleToSignup').addEventListener('click', () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('signupBox').classList.remove('hidden'); });
+
+        // AUTH ENGINE HOOKS
+        document.getElementById('btnSignup').addEventListener('click', async () => {
+            const gamerTag = document.getElementById('regTag').value.trim();
+            const pin = document.getElementById('regPin').value.trim();
             
-            // Server-side text fetch (Zero Leak)
-            try {
-                const res = await fetch(`${BACKEND}/api/game/paragraph`, { headers: { 'Authorization': `Bearer ${token}` } });
-                const data = await res.json();
-                words = data.text.split(' ');
-            } catch { words = ["fallback", "matrix", "offline", "server"]; }
+            const res = await fetch(`${API_URL}/api/auth/signup`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ gamerTag, pin }) });
+            const data = await res.json();
+            if(res.ok) {
+                alert(`✅ Account Registered!\nYour Unique User ID (UID): ${data.uid}\nYour Password PIN: ${data.pin}\n\nNote down your UID to login!`);
+                document.getElementById('signupBox').classList.add('hidden');
+                document.getElementById('loginBox').classList.remove('hidden');
+                document.getElementById('loginUid').value = data.uid;
+            } else { alert(data.error); }
+        });
 
-            isPlaying = true; timer = 60; score = 0; currentIdx = 0;
-            document.getElementById('arenaInput').disabled = false;
-            document.getElementById('arenaInput').value = '';
-            document.getElementById('arenaInput').focus();
-            document.getElementById('arenaStartBtn').innerText = "MATCH LIVE";
-            renderArenaWords();
+        document.getElementById('btnLogin').addEventListener('click', async () => {
+            const uid = document.getElementById('loginUid').value.trim();
+            const pin = document.getElementById('loginPin').value.trim();
+            
+            const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ uid, pin }) });
+            const data = await res.json();
+            if(res.ok) {
+                currentUser = data;
+                document.getElementById('hudGamerTag').innerText = currentUser.gamerTag.toUpperCase();
+                document.getElementById('hudUID').innerText = `UID: ${currentUser.uid}`;
+                document.getElementById('coinBalanceDisplay').innerText = currentUser.balanceCoins;
+                
+                document.getElementById('topHud').classList.remove('hidden');
+                document.getElementById('hudNavigation').classList.remove('hidden');
+                view('screenLobby');
+                if(currentUser.gamerTag.toLowerCase() === 'admin' || currentUser.gamerTag.toLowerCase() === 'owner') {
+                    document.getElementById('btnAdminTrigger').classList.remove('hidden');
+                }
+            } else { alert(data.error); }
+        });
 
-            interval = setInterval(() => {
-                timer--;
-                document.getElementById('liveTimer').innerText = timer;
-                if(timer <= 0) endOfficialMatch();
+        // TOURNAMENT SYNCHRONIZED MATRIX LOGIC
+        function seedCaptchaGenerator(seed) {
+            const map = "ABCDEFGHJKLMNOPQRSTUVWXYZ23456789";
+            let res = "", finalSeed = parseInt(tournamentCode) + seed;
+            for (let i = 0; i < 6; i++) {
+                finalSeed = (finalSeed * 9301 + 49297) % 233280;
+                res += map.charAt(Math.floor((finalSeed / 233280) * map.length));
+            }
+            return res.toUpperCase();
+        }
+
+        document.getElementById('btnJoinTournament').addEventListener('click', () => {
+            tournamentCode = document.getElementById('roomCodeInput').value.trim();
+            if(!tournamentCode) return alert("Enter valid Room Token.");
+            
+            socket.emit('join_arena_lobby', { matchId: tournamentCode });
+            document.getElementById('lobbyStatus').innerText = `LOBBY CONNECTED: CODE [ ${tournamentCode} ]`;
+            document.getElementById('lobbyStatus').className = "text-xs font-black text-cyan-400 tracking-wider animate-pulse";
+        });
+
+        document.getElementById('btnAdminTrigger').addEventListener('click', () => {
+            socket.emit('request_match_text', { matchId: tournamentCode });
+        });
+
+        socket.on('inject_secure_text', () => {
+            view('screenBattle');
+            let preGameClock = 4;
+            document.getElementById('captchaDisplay').innerText = `SYNCING HARDWARE...`;
+            
+            let cdId = setInterval(() => {
+                preGameClock--;
+                if(preGameClock <= 0) {
+                    clearInterval(cdId);
+                    executeLiveBattleCore();
+                } else {
+                    document.getElementById('captchaDisplay').innerText = `BATTLE IN ${preGameClock}`;
+                }
             }, 1000);
         });
 
-        document.getElementById('arenaInput').addEventListener('input', () => {
-            let typed = document.getElementById('arenaInput').value.trim();
-            if(typed === words[currentIdx]) {
-                score++; currentIdx++;
-                document.getElementById('arenaInput').value = '';
-                let liveWpm = Math.round((score / (60 - timer)) * 60);
-                document.getElementById('liveWpm').innerText = isFinite(liveWpm) ? liveWpm : score;
-                if(currentIdx >= words.length) currentIdx = 0;
-                renderArenaWords();
+        socket.on('terminate_gamer_session', ({ user, reason }) => {
+            document.getElementById('liveLeader').innerText = `${user} (${reason} CP)`;
+        });
+
+        function executeLiveBattleCore() {
+            activeBattleState = true; clock = 60; totalSolved = 0; seedIndex = 1;
+            document.getElementById('battleTyper').disabled = false;
+            document.getElementById('battleTyper').value = "";
+            document.getElementById('battleTyper').focus();
+            
+            currentCode = seedCaptchaGenerator(seedIndex);
+            document.getElementById('captchaDisplay').innerText = currentCode;
+
+            clockIntervalId = setInterval(() => {
+                clock--;
+                document.getElementById('matchClock').innerText = `TIME: ${clock}s`;
+                
+                // Humanly Impossible Speed Threshold Check (Anti-Cheat Validation)
+                if(totalSolved > 45) { triggerSelfDisqualification("IMPOSSIBLE HUMAN SPEED DETECTED"); }
+                
+                if(clock <= 0) evaluationPipelineEnd();
+            }, 1000);
+        }
+
+        document.getElementById('battleTyper').addEventListener('input', () => {
+            if(!activeBattleState) return;
+            let val = document.getElementById('battleTyper').value.trim().toUpperCase();
+            
+            // Check for immediate failure or mismatch
+            if(val.length >= currentCode.length && val !== currentCode) {
+                triggerSelfDisqualification("INCORRECT CAPTCHA CODE MATRIX INPUT");
+                return;
+            }
+
+            if(val === currentCode) {
+                totalSolved++;
+                document.getElementById('myCounter').innerText = totalSolved;
+                document.getElementById('battleTyper').value = "";
+                
+                socket.emit('flag_cheat_violation', { matchId: tournamentCode, user: currentUser.gamerTag, reason: totalSolved });
+                
+                seedIndex++;
+                currentCode = seedCaptchaGenerator(seedIndex);
+                document.getElementById('captchaDisplay').innerText = currentCode;
             }
         });
 
-        async function endOfficialMatch() {
-            clearInterval(interval); isPlaying = false;
-            document.getElementById('arenaInput').disabled = true;
-            document.getElementById('arenaStartBtn').innerText = "Start Official Match";
-            const finalWpm = parseInt(document.getElementById('liveWpm').innerText);
-
-            await fetch(`${BACKEND}/api/game/submit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ matchId, wpm: finalWpm, status: 'QUALIFIED' })
-            });
-            alert(`Match Over! Speed logged: ${finalWpm} WPM.`);
+        function triggerSelfDisqualification(cause) {
+            clearInterval(clockIntervalId); activeBattleState = false;
+            document.getElementById('battleTyper').disabled = true;
+            document.getElementById('captchaDisplay').innerText = "DISQUALIFIED";
+            document.getElementById('captchaDisplay').className = "text-3xl font-black text-red-500 font-mono";
+            alert(`🚨 LOBBY TERMINATION:\nYou have been DISQUALIFIED.\nReason: ${cause}`);
         }
 
-        // WALLET SYSTEM PROCESSES (HANDBOOK SECTION 3.C)
-        const processTx = async (type) => {
-            const amount = parseInt(document.getElementById('walletAmount').value);
-            if(!amount || amount <= 0) return alert("Enter valid coin amount");
+        function evaluationPipelineEnd() {
+            clearInterval(clockIntervalId); activeBattleState = false;
+            document.getElementById('battleTyper').disabled = true;
+            
+            // Explicit Multi-tier Pricing Display logic mapped directly from specifications
+            let rankMessage = `Tournament Complete!\nTotal Solved Captchas: ${totalSolved}\n\n`;
+            rankMessage += "🏆 Official Prize Distribution Metrics:\nRank 1: ₹100\nRank 2: ₹50\nRank 3: ₹30\nRank 4-10: ₹20\nRank 11-30: ₹15\nRank 31-50: ₹10";
+            alert(rankMessage);
+        }
 
-            try {
-                const res = await fetch(`${BACKEND}/api/wallet/transaction`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                    body: JSON.stringify({ amount, type })
-                });
-                const data = await res.json();
-                alert(data.message);
-            } catch { alert("Wallet system synchronization error"); }
-        };
-        document.getElementById('depositBtn').addEventListener('click', () => processTx('deposit'));
-        document.getElementById('withdrawBtn').addEventListener('click', () => processTx('withdrawal'));
+        // FINANCIAL DISPATCH TRANSACTIONS
+        async function sendWalletPayload(type, amount, upiId) {
+            if(!amount || amount <= 0) return alert("Invalid entry amount.");
+            const res = await fetch(`${API_URL}/api/wallet/request`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ uid: currentUser.uid, amountINR: amount, type, upiId })
+            });
+            const data = await res.json();
+            alert(data.message);
+        }
+
+        document.getElementById('btnSubmitDeposit').addEventListener('click', () => { sendWalletPayload('DEPOSIT', parseFloat(document.getElementById('depAmount').value), ""); });
+        document.getElementById('btnSubmitWithdraw').addEventListener('click', () => { sendWalletPayload('WITHDRAWAL', parseFloat(document.getElementById('withAmount').value), document.getElementById('withUpi').value.trim()); });
+
+        // HARDCORE HARDWARE ANTI-CHEAT SHIELD HOOKS
+        window.addEventListener('blur', () => { if(activeBattleState) triggerSelfDisqualification("TAB SWITCH DETECTION DETECTED"); });
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = (e) => { if (e.ctrlKey && (e.key === 'c' || e.key === 'v')) { e.preventDefault(); triggerSelfDisqualification("COPY PASTE ATTACK DETECTED"); } };
     </script>
 </body>
 </html>
