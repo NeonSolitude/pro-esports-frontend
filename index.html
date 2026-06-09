@@ -3,275 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Esports Typing Arena - Portal</title>
+    <title>Pro Esports Typing Arena</title>
     <style>
-        :root {
-            --bg-color: #05050b;
-            --panel-bg: #0f0f1e;
-            --neon-cyan: #00f2fe;
-            --neon-pink: #fe019a;
-            --text: #e0e0ff;
-        }
-        body {
-            margin: 0; padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; box-sizing: border-box;
-        }
-        header {
-            text-align: center; margin-top: 20px;
-        }
-        h1 {
-            font-size: 2rem; color: #fff; text-shadow: 0 0 10px var(--neon-cyan);
-            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px;
-        }
-        .auth-container, .game-container {
-            width: 90%; max-width: 450px;
-            background: var(--panel-bg);
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
-            border-radius: 12px; padding: 30px; margin-top: 30px;
-            box-sizing: border-box; display: none;
-        }
+        :root { --bg: #05050a; --panel: #0d0d1a; --cyan: #00f2fe; --pink: #fe019a; --text: #e2e2ff; }
+        body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .box { width: 90%; max-width: 500px; background: var(--panel); border: 2px solid var(--cyan); border-radius: 12px; padding: 25px; margin-top: 40px; box-sizing: border-box; display: none; box-shadow: 0 0 15px rgba(0,242,254,0.2); }
         .active { display: block; }
-        h2 {
-            text-align: center; text-transform: uppercase; letter-spacing: 2px;
-            color: #fff; text-shadow: 0 0 10px var(--neon-pink); font-size: 1.5rem;
-            margin-top: 0;
-        }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #8888aa; }
-        input {
-            width: 100%; padding: 12px; background: #161632; border: 1px solid #333366;
-            color: #fff; border-radius: 6px; outline: none; box-sizing: border-box;
-            font-size: 1rem;
-        }
-        input:focus { border-color: var(--neon-pink); box-shadow: 0 0 8px rgba(254, 1, 154, 0.4); }
-        .btn {
-            width: 100%; padding: 12px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink));
-            border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; font-size: 1rem;
-        }
-        .btn:hover { opacity: 0.9; }
-        .toggle-link { text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--neon-cyan); cursor: pointer; }
-        
-        /* Game Screen Layout */
-        .game-container { max-width: 700px; }
-        .stats { display: flex; justify-content: space-around; background: #000; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid var(--neon-pink); }
-        .word-box { font-size: 1.5rem; padding: 20px; background: #070714; border-radius: 6px; margin-bottom: 20px; text-align: center; min-height: 50px; border: 1px solid #222244; letter-spacing: 1px;}
-        .current { color: var(--neon-cyan); font-weight: bold; text-decoration: underline; text-shadow: 0 0 5px var(--neon-cyan); }
+        h2 { text-align: center; text-transform: uppercase; margin-top: 0; text-shadow: 0 0 10px var(--cyan); color: #fff; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #8a8aaf; font-size: 0.9rem; }
+        input { width: 100%; padding: 12px; background: #14142c; border: 1px solid #333366; color: #fff; border-radius: 6px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--pink); box-shadow: 0 0 8px rgba(254,1,154,0.4); }
+        .btn { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--cyan), var(--pink)); border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .link { text-align: center; margin-top: 15px; color: var(--cyan); cursor: pointer; font-size: 0.9rem; }
+        .nav { display: flex; justify-content: space-around; margin-top: 20px; background: #000; padding: 10px; width: 100%; position: fixed; bottom: 0; }
+        .nav-item { color: #8a8aaf; cursor: pointer; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .nav-item.active-nav { color: var(--cyan); text-shadow: 0 0 5px var(--cyan); }
+        .word-box { background: #000; padding: 20px; border-radius: 6px; font-size: 1.3rem; text-align: center; margin-bottom: 15px; border: 1px solid #222244; letter-spacing: 1px; min-height: 40px; }
+        .current-word { color: var(--pink); font-weight: bold; text-decoration: underline; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Neon Arena v2</h1>
-    </header>
+    <h1 style="text-align:center; color:#fff; text-shadow:0 0 15px var(--cyan); margin-top:20px; text-transform:uppercase; font-size:1.8rem;">Arena Matrix</h1>
 
-    <div id="authBox" class="auth-container active">
-        <h2 id="authTitle">Esports Login</h2>
-        <div class="form-group" id="usernameGroup" style="display: none;">
-            <label>Esports Tag (Username)</label>
-            <input type="text" id="username" placeholder="Enter unique gamer tag">
+    <div id="authBox" class="box active">
+        <h2 id="authTitle">Gamer Login</h2>
+        <div class="form-group" id="userGroup" style="display:none;">
+            <label>Esports Gamer Tag</label>
+            <input type="text" id="authUsername" placeholder="Unique name">
         </div>
         <div class="form-group">
             <label>Email Address</label>
-            <input type="email" id="email" placeholder="Enter email">
+            <input type="email" id="authEmail" placeholder="Enter email">
         </div>
         <div class="form-group">
-            <label>Security Password</label>
-            <input type="password" id="password" placeholder="Enter password">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="Enter security key">
         </div>
-        <button class="btn" id="authBtn">Enter Arena</button>
-        <div class="toggle-link" id="toggleMode">New Player? Register Account</div>
+        <button class="btn" id="authSubmitBtn">Initialize Connection</button>
+        <div class="link" id="authToggle">New Player? Create Account</div>
     </div>
 
-    <div id="gameBox" class="game-container">
-        <h2>Arena Core Active</h2>
-        <div id="welcomeGamer" style="text-align: center; color: var(--neon-pink); margin-bottom: 15px; font-weight: bold; letter-spacing: 1px;"></div>
-        <div class="stats">
-            <div>SPEED: <span id="wpm" style="color:#fff; font-weight:bold; font-size: 1.2rem;">0</span> WPM</div>
-            <div>TIME: <span id="timer" style="color:#fff; font-weight:bold; font-size: 1.2rem;">60</span>s</div>
+    <div id="arenaBox" class="box">
+        <h2>Typing Arena</h2>
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; background:#000; padding:10px; border-radius:4px;">
+            <div>WPM: <span id="liveWpm" style="color:var(--cyan)">0</span></div>
+            <div>TIME: <span id="liveTimer" style="color:var(--pink)">60</span>s</div>
         </div>
-        <div class="word-box" id="wordDisplay">Loading match data...</div>
-        <input type="text" id="typingInput" style="width:100%; padding:15px; font-size:1.2rem; background:#161632; border:1px solid #333366; color:#fff; border-radius:6px; box-sizing: border-box;" placeholder="Click start button below to unlock input..." disabled>
-        <button class="btn" id="startBtn" style="margin-top:20px;">Start Official Match</button>
+        <div class="word-box" id="arenaWordDisplay">Click Start Match Below...</div>
+        <input type="text" id="arenaInput" placeholder="Secure typing field..." disabled>
+        <button class="btn" id="arenaStartBtn">Start Official Match</button>
+    </div>
+
+    <div id="walletBox" class="box">
+        <h2>Esports Wallet</h2>
+        <div style="text-align:center; margin-bottom:20px; background:#000; padding:15px; border-radius:6px; border:1px solid var(--cyan);">
+            <div style="color:#8a8aaf; font-size:0.8rem; text-transform:uppercase;">Current Balance</div>
+            <div style="font-size:2rem; font-weight:bold; color:#fff; margin-top:5px;"><span id="walletBal">0</span> <span style="font-size:1rem; color:var(--pink)">COINS</span></div>
+        </div>
+        <div class="form-group">
+            <label>Amount (Coins)</label>
+            <input type="number" id="walletAmount" placeholder="Enter coins">
+        </div>
+        <button class="btn" id="depositBtn" style="background:var(--cyan); color:#000;">Request Deposit</button>
+        <button class="btn" id="withdrawBtn" style="background:transparent; border:1px solid var(--pink); color:var(--pink);">Request Withdrawal</button>
+    </div>
+
+    <div id="navigationBar" class="nav" style="display:none;">
+        <div class="nav-item active-nav" id="navArena">Arena</div>
+        <div class="nav-item" id="navWallet">Wallet</div>
+        <div class="nav-item" id="navLogout">Logout</div>
     </div>
 
     <script>
-        const BACKEND_URL = "https://pro-esports-typing-arena.onrender.com";
-        let isLoginMode = true;
-        let authToken = "";
-        let gamerTag = "";
+        const BACKEND = "https://pro-esports-typing-arena.onrender.com";
+        let token = "", isLogin = true, words = [], currentIdx = 0, score = 0, timer = 60, isPlaying = false, interval;
+        const matchId = "MATCH_" + Math.floor(Math.random() * 100000);
 
-        // Words Dataset
-        const words = ["database", "authentication", "encryption", "server", "javascript", "mongodb", "cluster", "repository", "backend", "deployment", "terminal", "request", "token", "payload", "node", "express", "schema", "headers"];
-        let currentWordIndex = 0;
-        let timer = 60;
-        let score = 0;
-        let isPlaying = false;
-        let intervalId;
-
-        // DOM Elements
-        const authBox = document.getElementById('authBox');
-        const gameBox = document.getElementById('gameBox');
-        const authTitle = document.getElementById('authTitle');
-        const usernameGroup = document.getElementById('usernameGroup');
-        const authBtn = document.getElementById('authBtn');
-        const toggleMode = document.getElementById('toggleMode');
-        const welcomeGamer = document.getElementById('welcomeGamer');
+        // UI Switches
+        const showBox = (id) => { document.querySelectorAll('.box').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); };
         
-        const wordDisplay = document.getElementById('wordDisplay');
-        const typingInput = document.getElementById('typingInput');
-        const timerTxt = document.getElementById('timer');
-        const wpmTxt = document.getElementById('wpm');
-        const startBtn = document.getElementById('startBtn');
+        // Navigation Setup
+        document.getElementById('navArena').addEventListener('click', () => { showBox('arenaBox'); setActiveNav('navArena'); });
+        document.getElementById('navWallet').addEventListener('click', () => { showBox('walletBox'); setActiveNav('navWallet'); });
+        document.getElementById('navLogout').addEventListener('click', () => { localStorage.clear(); location.reload(); });
+        function setActiveNav(id) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active-nav')); document.getElementById(id).classList.add('active-nav'); }
 
-        // Toggle handling
-        toggleMode.addEventListener('click', () => {
-            isLoginMode = !isLoginMode;
-            if (isLoginMode) {
-                authTitle.innerText = "Esports Login";
-                usernameGroup.style.display = "none";
-                toggleMode.innerText = "New Player? Register Account";
-                authBtn.innerText = "Enter Arena";
-            } else {
-                authTitle.innerText = "Register Gamer";
-                usernameGroup.style.display = "block";
-                toggleMode.innerText = "Already registered? Login here";
-                authBtn.innerText = "Create Account";
-            }
+        // Auth Form Toggle
+        document.getElementById('authToggle').addEventListener('click', () => {
+            isLogin = !isLogin;
+            document.getElementById('authTitle').innerText = isLogin ? "Gamer Login" : "Register Account";
+            document.getElementById('userGroup').style.display = isLogin ? "none" : "block";
+            document.getElementById('authToggle').innerText = isLogin ? "New Player? Create Account" : "Already registered? Login here";
         });
 
-        // Loop array patterns to find your exact backend route match
-        async function multiRouteAuth(endpoints, payload) {
-            let lastError = "Could not connect to server endpoints.";
-            for (let path of endpoints) {
-                try {
-                    console.log(`Checking route: ${BACKEND_URL}${path}`);
-                    const response = await fetch(`${BACKEND_URL}${path}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    const data = await response.json();
-                    if (response.ok) {
-                        return data; // Jo route code parse kar lega wahi directly exit dega
-                    } else {
-                        lastError = data.message || "Route response not OK";
-                    }
-                } catch (e) {
-                    console.log(`Path ${path} skipped or unhandled.`);
-                }
-            }
-            throw new Error(lastError);
-        }
+        // AUTH OPERATION (HANDBOOK SECTION 3.A)
+        document.getElementById('authSubmitBtn').addEventListener('click', async () => {
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const username = document.getElementById('authUsername').value.trim();
 
-        authBtn.addEventListener('click', async () => {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const username = document.getElementById('username').value.trim();
-
-            if(!email || !password || (!isLoginMode && !username)) {
-                alert("Please fill all fields!");
-                return;
-            }
-
-            // Standard structures fallbacks
-            const registerEndpoints = ["/api/auth/register", "/api/users/register", "/register", "/signup", "/api/users", "/api/signup"];
-            const loginEndpoints = ["/api/auth/login", "/api/users/login", "/login", "/signin", "/api/users/login", "/api/signin"];
-            
-            const targetedEndpoints = isLoginMode ? loginEndpoints : registerEndpoints;
-            const payload = isLoginMode ? { email, password } : { username, email, password };
+            const path = isLogin ? "/api/auth/login" : "/api/auth/register";
+            const payload = isLogin ? { email, password } : { username, email, password };
 
             try {
-                authBtn.innerText = "Testing Cluster Matrix...";
-                const data = await multiRouteAuth(targetedEndpoints, payload);
+                const res = await fetch(`${BACKEND}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if(!res.ok) throw new Error(data.message);
 
-                // Extract Token & Profiler
-                authToken = data.token || (data.data && data.data.token);
-                gamerTag = data.user?.username || data.username || username || "Elite Gamer";
-                
-                authBox.classList.remove('active');
-                gameBox.classList.add('active');
-                welcomeGamer.innerText = `🎮 READY FOR CLUTCH, ${gamerTag.toUpperCase()} 🎮`;
-                wordDisplay.innerText = "Press Start Match below when ready.";
-
-            } catch (err) {
-                alert(`Connection Error: ${err.message}. Check your server logs or parameters structure!`);
-                authBtn.innerText = isLoginMode ? "Enter Arena" : "Create Account";
-            }
+                token = data.token;
+                document.getElementById('walletBal').innerText = data.user.wallet_balance;
+                document.getElementById('navigationBar').style.display = "flex";
+                showBox('arenaBox');
+            } catch (err) { alert(err.message); }
         });
 
-        // GAME PLAY MECHANICS
-        function showWords() {
-            wordDisplay.innerHTML = words.map((w, idx) => {
-                if(idx === currentWordIndex) return `<span class="current">${w}</span>`;
-                return `<span>${w}</span>`;
-            }).join(' ');
+        // 🛡️ ANTI-CHEAT LOGIC GATEWAY (HANDBOOK SECTION 3.B)
+        const triggerDisqualification = async (reason) => {
+            if(!isPlaying) return;
+            clearInterval(interval); isPlaying = false;
+            document.getElementById('arenaInput').disabled = true;
+            document.getElementById('arenaStartBtn').innerText = "DISQUALIFIED";
+            alert(`🚨 DISQUALIFIED: ${reason}`);
+
+            await fetch(`${BACKEND}/api/game/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ matchId, wpm: 0, status: 'DISQUALIFIED', cheatReason: reason })
+            });
+        };
+
+        // Window event hooks
+        window.addEventListener('blur', () => triggerDisqualification('Tab Switch Detected'));
+        document.addEventListener('visibilitychange', () => { if(document.hidden) triggerDisqualification('Background Minimization'); });
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if(e.ctrlKey && (e.key === 'c' || e.key === 'v')) { e.preventDefault(); triggerDisqualification('Copy-Paste Violation'); } });
+
+        // GAMEPLAY CYCLE ENGINE
+        function renderArenaWords() {
+            document.getElementById('arenaWordDisplay').innerHTML = words.map((w, i) => i === currentIdx ? `<span class="current-word">${w}</span>` : `<span>${w}</span>`).join(' ');
         }
 
-        startBtn.addEventListener('click', () => {
+        document.getElementById('arenaStartBtn').addEventListener('click', async () => {
             if(isPlaying) return;
-            isPlaying = true;
-            timer = 60; score = 0; currentWordIndex = 0;
-            typingInput.disabled = false; typingInput.value = ''; typingInput.focus();
-            timerTxt.innerText = timer; wpmTxt.innerText = '0';
-            startBtn.innerText = "Match Live...";
-            showWords();
+            
+            // Server-side text fetch (Zero Leak)
+            try {
+                const res = await fetch(`${BACKEND}/api/game/paragraph`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await res.json();
+                words = data.text.split(' ');
+            } catch { words = ["fallback", "matrix", "offline", "server"]; }
 
-            intervalId = setInterval(() => {
+            isPlaying = true; timer = 60; score = 0; currentIdx = 0;
+            document.getElementById('arenaInput').disabled = false;
+            document.getElementById('arenaInput').value = '';
+            document.getElementById('arenaInput').focus();
+            document.getElementById('arenaStartBtn').innerText = "MATCH LIVE";
+            renderArenaWords();
+
+            interval = setInterval(() => {
                 timer--;
-                timerTxt.innerText = timer;
-                if(timer <= 0) endArenaMatch();
+                document.getElementById('liveTimer').innerText = timer;
+                if(timer <= 0) endOfficialMatch();
             }, 1000);
         });
 
-        typingInput.addEventListener('input', () => {
-            let currentWord = words[currentWordIndex];
-            let typed = typingInput.value.trim();
-
-            if(typed === currentWord) {
-                score++;
-                currentWordIndex++;
-                typingInput.value = '';
-                let calculatedWpm = Math.round((score / (60 - timer)) * 60);
-                wpmTxt.innerText = isFinite(calculatedWpm) ? calculatedWpm : score;
-
-                if(currentWordIndex >= words.length) currentWordIndex = 0;
-                showWords();
+        document.getElementById('arenaInput').addEventListener('input', () => {
+            let typed = document.getElementById('arenaInput').value.trim();
+            if(typed === words[currentIdx]) {
+                score++; currentIdx++;
+                document.getElementById('arenaInput').value = '';
+                let liveWpm = Math.round((score / (60 - timer)) * 60);
+                document.getElementById('liveWpm').innerText = isFinite(liveWpm) ? liveWpm : score;
+                if(currentIdx >= words.length) currentIdx = 0;
+                renderArenaWords();
             }
         });
 
-        async function endArenaMatch() {
-            clearInterval(intervalId);
-            isPlaying = false;
-            typingInput.disabled = true;
-            startBtn.innerText = "Start Official Match";
-            const finalWpm = parseInt(wpmTxt.innerText);
-            alert(`Esports Match Over! Registered Speed: ${finalWpm} WPM`);
+        async function endOfficialMatch() {
+            clearInterval(interval); isPlaying = false;
+            document.getElementById('arenaInput').disabled = true;
+            document.getElementById('arenaStartBtn').innerText = "Start Official Match";
+            const finalWpm = parseInt(document.getElementById('liveWpm').innerText);
 
-            const scorePaths = ["/api/scores", "/scores", "/api/score", "/api/users/score"];
-            for(let path of scorePaths) {
-                try {
-                    await fetch(`${BACKEND_URL}${path}`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${authToken}`
-                        },
-                        body: JSON.stringify({ score: finalWpm })
-                    });
-                    console.log(`Score saved via standard endpoint path: ${path}`);
-                    break;
-                } catch (err) {
-                    console.log(`Score route pattern mismatch for: ${path}`);
-                }
-            }
+            await fetch(`${BACKEND}/api/game/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ matchId, wpm: finalWpm, status: 'QUALIFIED' })
+            });
+            alert(`Match Over! Speed logged: ${finalWpm} WPM.`);
         }
+
+        // WALLET SYSTEM PROCESSES (HANDBOOK SECTION 3.C)
+        const processTx = async (type) => {
+            const amount = parseInt(document.getElementById('walletAmount').value);
+            if(!amount || amount <= 0) return alert("Enter valid coin amount");
+
+            try {
+                const res = await fetch(`${BACKEND}/api/wallet/transaction`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ amount, type })
+                });
+                const data = await res.json();
+                alert(data.message);
+            } catch { alert("Wallet system synchronization error"); }
+        };
+        document.getElementById('depositBtn').addEventListener('click', () => processTx('deposit'));
+        document.getElementById('withdrawBtn').addEventListener('click', () => processTx('withdrawal'));
     </script>
 </body>
 </html>
