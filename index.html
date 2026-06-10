@@ -3,205 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Esports Captcha Tournament</title>
+    <title>Esports Captcha Tournament - Stable Production v4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { background-color: #030308; }
+        .captcha-grid {
+            background-image: linear-gradient(rgba(6, 182, 212, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
+            background-size: 15px 15px;
+        }
+    </style>
 </head>
-<body class="bg-[#020206] text-slate-200 min-h-screen flex flex-col justify-between font-sans select-none">
+<body class="text-slate-100 min-h-screen flex flex-col justify-between font-sans select-none captcha-grid">
 
-    <div id="topHud" class="w-full bg-slate-950 border-b border-cyan-500/10 px-6 py-4 flex justify-between items-center hidden shadow-2xl">
+    <div id="topProfileBar" class="w-full bg-slate-950/90 border-b border-cyan-500/10 px-6 py-4 flex justify-between items-center hidden shadow-2xl backdrop-blur-md sticky top-0 z-50">
         <div>
-            <p id="hudGamerTag" class="font-black text-xs tracking-widest text-cyan-400">GAMER</p>
-            <p id="hudUID" class="text-[9px] font-mono text-slate-500 mt-0.5">UID: -</p>
+            <p id="hudGamerTag" class="font-black text-xs tracking-widest text-cyan-400">CONNECTING_GAMER</p>
+            <p id="hudUID" class="text-[9px] font-mono text-slate-500 mt-0.5">UID: PARSING_ERROR</p>
         </div>
-        <div class="bg-cyan-950/40 border border-cyan-500/20 px-3 py-1 rounded text-xs font-black text-cyan-400">
+        <div class="bg-cyan-950/40 border border-cyan-500/20 px-3 py-1.5 rounded-xl text-xs font-black text-cyan-400 tracking-wider">
             🪙 Balance: <span id="coinBalanceDisplay">0</span> Coins
         </div>
     </div>
 
     <div class="w-full max-w-md mx-auto px-4 flex-grow flex flex-col justify-center items-center my-4">
         
-        <div id="screenAuth" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-            <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-pink-500 bg-clip-text text-transparent uppercase">NEON ARENA v3</h1>
+        <div id="screenAuth" class="w-full bg-slate-900/50 border border-slate-800 rounded-3xl p-6 text-center space-y-5 shadow-2xl backdrop-blur-sm">
+            <div>
+                <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent uppercase tracking-tight">CAPTCHA CHAMPIONS</h1>
+                <p class="text-[10px] tracking-widest text-slate-500 uppercase font-bold mt-1">Real Stakes Competitive Engine</p>
+            </div>
             
             <div id="signupBox" class="space-y-3">
-                <input type="text" id="regTag" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm" placeholder="CREATE GAMER TAG">
-                <input type="password" id="regPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest" placeholder="4-DIGIT SECURE PIN">
-                <button id="btnSignup" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest text-white">Create Account</button>
-                <p id="toggleToLogin" class="text-xs text-cyan-400 cursor-pointer underline pt-2">Already Registered? Login here</p>
+                <input type="text" id="regTag" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-wide text-white transition-colors" placeholder="CREATE UNIQUE GAMER TAG">
+                <input type="password" id="regPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest text-white transition-colors" placeholder="4-DIGIT PIN">
+                <button id="btnSignup" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-cyan-500/10">Create Account Entity</button>
+                <p id="toggleToLogin" class="text-xs text-cyan-400 cursor-pointer underline pt-2 font-medium">Have registered profile keys? Log In</p>
             </div>
 
             <div id="loginBox" class="space-y-3 hidden">
-                <input type="text" id="loginUid" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-mono text-sm tracking-wide" placeholder="ENTER YOUR 12-DIGIT UID">
-                <input type="password" id="loginPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest" placeholder="4-DIGIT PIN">
-                <button id="btnLogin" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl font-black text-xs uppercase tracking-widest text-white">Access Portal</button>
-                <p id="toggleToSignup" class="text-xs text-pink-500 cursor-pointer underline pt-2">New Player? Register Account</p>
+                <input type="text" id="loginUid" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-mono text-sm tracking-widest text-white transition-colors" placeholder="ENTER 12-DIGIT UID">
+                <input type="password" id="loginPin" maxlength="4" class="w-full bg-slate-950 border border-slate-800 focus:border-pink-500 p-3.5 rounded-xl outline-none text-center font-bold text-sm tracking-widest text-white transition-colors" placeholder="4-DIGIT PIN">
+                <button id="btnLogin" class="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-pink-500/10">Unlock Secure Session</button>
+                <p id="toggleToSignup" class="text-xs text-pink-500 cursor-pointer underline pt-2 font-medium">Need entry key framework? Sign Up</p>
             </div>
         </div>
 
-        <div id="screenLobby" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 text-center space-y-6 shadow-2xl hidden">
+        <div id="screenLobby" class="w-full bg-slate-900/50 border border-slate-800 rounded-3xl p-6 text-center space-y-6 shadow-2xl backdrop-blur-sm hidden">
             <div>
-                <h2 class="text-2xl font-black text-white uppercase tracking-wider">100-Player Lobby</h2>
-                <p class="text-[10px] tracking-widest text-slate-500 uppercase font-black mt-1">Unified Speed Rules Apply</p>
+                <h2 class="text-2xl font-black text-white uppercase tracking-wider">Multiplayer Lobby Node</h2>
+                <p class="text-[10px] tracking-widest text-emerald-400 font-black uppercase mt-1">Cost Per Entry: 1,000 Coins (₹10)</p>
             </div>
             
             <div class="space-y-3">
-                <input type="text" id="roomCodeInput" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-mono font-bold text-sm tracking-widest" placeholder="ENTER LOBBY CODE">
-                <button id="btnJoinTournament" class="w-full py-4 bg-cyan-500 rounded-xl font-black text-xs uppercase tracking-widest text-black shadow-lg">Join Tournament Room</button>
-                <button id="btnAdminTrigger" class="w-full py-4 bg-emerald-600 rounded-xl font-black text-xs uppercase tracking-widest text-white hidden">Launch Match (Admin Only)</button>
+                <input type="text" id="roomCodeInput" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-mono font-bold text-sm tracking-widest text-white" placeholder="ENTER 4-DIGIT ROOM KEY">
+                <button id="btnJoinTournament" class="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-black rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-cyan-500/10">Synchronize Device Access</button>
+                <button id="btnAdminTrigger" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hidden shadow-xl shadow-emerald-500/10">Launch Global Match For All 100 Players</button>
             </div>
-            
-            <p id="lobbyStatus" class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Enter Room Token to sync device spectrum</p>
+            <p id="lobbyStatus" class="text-xs text-slate-400 font-bold uppercase tracking-wider animate-pulse">Lobby channel pipeline passive</p>
         </div>
 
-        <div id="screenBattle" class="w-full bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-2xl hidden">
+        <div id="screenBattle" class="w-full bg-slate-900/70 border border-slate-800 rounded-3xl p-6 space-y-5 shadow-2xl hidden">
             <div class="grid grid-cols-2 gap-3 text-center">
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <p class="text-[9px] text-cyan-400 font-black uppercase">Cleared Captchas</p>
-                    <p class="text-2xl font-black text-white mt-1"><span id="myCounter">0</span></p>
+                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800">
+                    <p class="text-[9px] text-cyan-400 font-black uppercase tracking-wider">Your Captchas Solved</p>
+                    <p class="text-3xl font-black text-white mt-1"><span id="myCounter">0</span></p>
                 </div>
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 border-l-2 border-l-pink-500">
-                    <p class="text-[9px] text-pink-500 font-black uppercase">Lobby Live Leader</p>
-                    <p id="liveLeader" class="text-xs font-black text-pink-400 mt-2 truncate">Updating...</p>
+                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 border-l-2 border-l-pink-500">
+                    <p class="text-[9px] text-pink-500 font-black uppercase tracking-wider">Lobby Leader</p>
+                    <p id="liveLeader" class="text-xs font-black text-pink-400 mt-2.5 truncate">Sync pending...</p>
                 </div>
             </div>
 
-            <div class="relative bg-slate-950 border-2 border-slate-800 rounded-xl p-6 flex flex-col items-center justify-center min-h-[100px] overflow-hidden">
-                <div id="captchaDisplay" class="text-4xl font-black tracking-[0.3em] text-white italic font-mono uppercase">LOBBY COUNTDOWN...</div>
+            <div class="relative bg-slate-950 border-2 border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[110px] overflow-hidden shadow-inner">
+                <div id="captchaDisplay" class="text-4xl font-black tracking-[0.3em] text-white italic font-mono uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">INITIALIZING...</div>
             </div>
 
-            <input type="text" id="battleTyper" class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-black text-2xl text-white tracking-widest uppercase" placeholder="TYPE CAPTCHA EXACTLY..." autocomplete="off" disabled>
+            <input type="text" id="battleTyper" class="w-full bg-slate-950 border-2 border-slate-800 focus:border-cyan-500 p-4 rounded-xl outline-none text-center font-black text-2xl text-white tracking-widest uppercase transition-colors" placeholder="TYPE UPPERCASE..." autocomplete="off" disabled>
             
-            <div class="flex justify-between items-center text-[10px] font-black tracking-wider text-slate-500 uppercase px-2">
-                <span id="matchClock">TIME: 60s</span>
-                <span>⚠️ TYPING INCORRECT CODE = DISQUALIFIED</span>
+            <div class="flex justify-between items-center text-[10px] font-black tracking-widest text-slate-500 uppercase px-1">
+                <span id="matchClock" class="text-pink-500 font-bold">TIMER: 60s</span>
+                <span class="text-red-500 font-black">💥 1 TYPO MISTAKE = DISQUALIFIED</span>
             </div>
         </div>
 
-        <div id="screenWallet" class="w-full bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl hidden">
-            <h2 class="text-xl font-black text-center text-white uppercase tracking-wider">Financial Transaction Engine</h2>
+        <div id="screenWallet" class="w-full bg-slate-900/50 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-2xl hidden overflow-y-auto max-h-[80vh]">
+            <h2 class="text-xl font-black text-center text-white uppercase tracking-wider">Asset Financial Hub</h2>
             
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-3">
-                <p class="text-xs font-black text-cyan-400 uppercase tracking-widest">Deposit System (1 INR = 100 Coins)</p>
-                <div class="w-40 h-56 mx-auto border-2 border-dashed border-slate-800 rounded-lg flex flex-col justify-center items-center bg-slate-900/50 p-2 overflow-hidden">
-                    <img src="https://i.imgur.com/HnUqbyP.png" alt="Paytm QR" class="w-full h-full object-contain rounded">
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-3 shadow-inner">
+                <p class="text-xs font-black text-cyan-400 uppercase tracking-widest">Buy Arena Coins (₹1 INR = 100 Coins)</p>
+                <div class="w-36 h-48 mx-auto border border-slate-800 rounded-xl flex flex-col justify-center items-center bg-slate-900 p-1">
+                    <img src="https://i.imgur.com/HnUqbyP.png" alt="Paytm Network QR" class="w-full h-full object-contain rounded-lg">
                 </div>
-                <p class="text-[10px] font-mono text-slate-400">UPI Address: <span class="text-white font-bold">vishah504@ptyes</span></p>
-                <input type="number" id="depAmount" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-bold text-sm" placeholder="Enter Deposited INR Amount">
-                <button id="btnSubmitDeposit" class="w-full py-2.5 bg-cyan-600 rounded-lg font-black text-xs uppercase tracking-wider text-white">Notify Owner of Deposit</button>
+                <p class="text-[10px] font-mono text-slate-400 bg-slate-900/50 py-1 rounded">UPI ID: <span class="text-white font-black">vishah504@ptyes</span></p>
+                <input type="number" id="depAmount" class="w-full bg-slate-900 border border-slate-800 p-3 rounded-xl text-center font-bold text-sm text-white outline-none focus:border-cyan-500" placeholder="ENTER DEPOSITED INR AMOUNT">
+                <button id="btnSubmitDeposit" class="w-full py-3 bg-cyan-600 text-white rounded-xl font-black text-xs uppercase tracking-wider">Notify Deposit Transaction</button>
             </div>
 
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center space-y-3">
-                <p class="text-xs font-black text-pink-500 uppercase tracking-widest">Secure Outflow Cashout</p>
-                <input type="number" id="withAmount" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-bold text-sm" placeholder="Enter INR Amount to Cashout">
-                <input type="text" id="withUpi" class="w-full bg-slate-900 border border-slate-800 p-2.5 rounded text-center font-mono text-xs" placeholder="Your Receiving UPI ID (e.g. name@paytm)">
-                <button id="btnSubmitWithdraw" class="w-full py-2.5 bg-pink-600 rounded-lg font-black text-xs uppercase tracking-wider text-white">Request Cashout Approval</button>
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center space-y-3 shadow-inner">
+                <p class="text-xs font-black text-pink-500 uppercase tracking-widest">Withdraw Earnings</p>
+                <input type="number" id="withAmount" class="w-full bg-slate-900 border border-slate-800 p-3 rounded-xl text-center font-bold text-sm text-white outline-none focus:border-pink-500" placeholder="ENTER CASH OUT AMOUNT INR">
+                <input type="text" id="withUpi" class="w-full bg-slate-900 border border-slate-800 p-3 rounded-xl text-center font-mono text-xs text-white outline-none focus:border-pink-500" placeholder="YOUR UPI ADDRESS ID">
+                <button id="btnSubmitWithdraw" class="w-full py-3 bg-pink-600 text-white rounded-xl font-black text-xs uppercase tracking-wider">Submit Cashout Request</button>
             </div>
         </div>
 
     </div>
 
-    <div id="hudNavigation" class="w-full bg-slate-950/90 border-t border-slate-800 py-4 px-8 flex justify-around items-center hidden sticky bottom-0 z-50">
-        <button id="navArena" class="text-xs uppercase font-black tracking-widest text-cyan-400">Tournament</button>
-        <button id="navWallet" class="text-xs uppercase font-black tracking-widest text-slate-500">Wallet HUD</button>
+    <div id="hudNavigation" class="w-full bg-slate-950/90 border-t border-slate-900 py-4 px-8 flex justify-around items-center hidden sticky bottom-0 z-50 backdrop-blur-md">
+        <button id="navArena" class="text-xs uppercase font-black tracking-widest text-cyan-400 transition-colors">Tournament Engine</button>
+        <button id="navWallet" class="text-xs uppercase font-black tracking-widest text-slate-500 transition-colors">Wallet HUD</button>
     </div>
 
     <script>
-        const API_URL = "http://localhost:5000"; // Replace with your live deploy node URL
+        // PRODUCTION SETUP NOTE: Update this URL string once you complete backend server deployment
+        const API_URL = "http://localhost:5000"; 
         const socket = io(API_URL);
 
-        let currentUser = null, tournamentCode = "", seedIndex = 1, currentCode = "", totalSolved = 0, clock = 60, clockIntervalId, activeBattleState = false;
+        let currentUser = null, roomToken = "", activeSeedValue = 1, currentTargetCaptcha = "", totalCleared = 0, countdownTime = 60, intervalSequenceId, executionActiveState = false;
 
         function view(id) {
-            ['screenAuth', 'screenLobby', 'screenBattle', 'screenWallet'].forEach(p => document.getElementById(p).classList.add('hidden'));
+            ['screenAuth', 'screenLobby', 'screenBattle', 'screenWallet'].forEach(panel => document.getElementById(panel).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // HUD View Switchers
-        document.getElementById('navArena').addEventListener('click', () => { view('screenLobby'); updateHudTabs('navArena'); });
-        document.getElementById('navWallet').addEventListener('click', () => { view('screenWallet'); updateHudTabs('navWallet'); });
+        document.getElementById('navArena').addEventListener('click', () => { view('screenLobby'); setNavDisplayState('navArena'); });
+        document.getElementById('navWallet').addEventListener('click', () => { view('screenWallet'); setNavDisplayState('navWallet'); });
         
-        function updateHudTabs(activeId) {
-            ['navArena', 'navWallet'].forEach(id => document.getElementById(id).className = "text-xs uppercase font-black tracking-widest text-slate-500");
-            document.getElementById(activeId).className = "text-xs uppercase font-black tracking-widest text-cyan-400";
+        function setNavDisplayState(activeButtonId) {
+            ['navArena', 'navWallet'].forEach(btn => document.getElementById(btn).className = "text-xs uppercase font-black tracking-widest text-slate-500");
+            document.getElementById(activeButtonId).className = "text-xs uppercase font-black tracking-widest text-cyan-400";
         }
 
-        // View Toggling Form Array Logic
         document.getElementById('toggleToLogin').addEventListener('click', () => { document.getElementById('signupBox').classList.add('hidden'); document.getElementById('loginBox').classList.remove('hidden'); });
         document.getElementById('toggleToSignup').addEventListener('click', () => { document.getElementById('loginBox').classList.add('hidden'); document.getElementById('signupBox').classList.remove('hidden'); });
 
-        // AUTH ENGINE HOOKS
+        // ======================== AUTHENTICATION TRANSACTION HOOKS ========================
         document.getElementById('btnSignup').addEventListener('click', async () => {
             const gamerTag = document.getElementById('regTag').value.trim();
             const pin = document.getElementById('regPin').value.trim();
-            
-            const res = await fetch(`${API_URL}/api/auth/signup`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ gamerTag, pin }) });
-            const data = await res.json();
-            if(res.ok) {
-                alert(`✅ Account Registered!\nYour Unique User ID (UID): ${data.uid}\nYour Password PIN: ${data.pin}\n\nNote down your UID to login!`);
-                document.getElementById('signupBox').classList.add('hidden');
-                document.getElementById('loginBox').classList.remove('hidden');
-                document.getElementById('loginUid').value = data.uid;
-            } else { alert(data.error); }
+            if(!gamerTag || pin.length !== 4) return alert("Fill registration metrics properly! PIN must be 4 digits.");
+
+            try {
+                const res = await fetch(`${API_URL}/api/auth/signup`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ gamerTag, pin }) });
+                const data = await res.json();
+                if(res.ok) {
+                    alert(`✅ Account Created!\nYour Login UID Key: ${data.uid}\nYour Secure PIN: ${data.pin}\n\nCRITICAL: Copy down your 12-digit UID code. It cannot be recovered!`);
+                    document.getElementById('signupBox').classList.add('hidden');
+                    document.getElementById('loginBox').classList.remove('hidden');
+                    document.getElementById('loginUid').value = data.uid;
+                } else { alert(data.error); }
+            } catch (err) { alert("Network payload failure during security initialization sequence."); }
         });
 
         document.getElementById('btnLogin').addEventListener('click', async () => {
             const uid = document.getElementById('loginUid').value.trim();
             const pin = document.getElementById('loginPin').value.trim();
-            
-            const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ uid, pin }) });
-            const data = await res.json();
-            if(res.ok) {
-                currentUser = data;
-                document.getElementById('hudGamerTag').innerText = currentUser.gamerTag.toUpperCase();
-                document.getElementById('hudUID').innerText = `UID: ${currentUser.uid}`;
-                document.getElementById('coinBalanceDisplay').innerText = currentUser.balanceCoins;
-                
-                document.getElementById('topHud').classList.remove('hidden');
-                document.getElementById('hudNavigation').classList.remove('hidden');
-                view('screenLobby');
-                if(currentUser.gamerTag.toLowerCase() === 'admin' || currentUser.gamerTag.toLowerCase() === 'owner') {
-                    document.getElementById('btnAdminTrigger').classList.remove('hidden');
-                }
-            } else { alert(data.error); }
+            if(!uid || !pin) return alert("Credentials fields empty.");
+
+            try {
+                const res = await fetch(`${API_URL}/api/auth/login`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ uid, pin }) });
+                const data = await res.json();
+                if(res.ok) {
+                    currentUser = data;
+                    document.getElementById('hudGamerTag').innerText = currentUser.gamerTag.toUpperCase();
+                    document.getElementById('hudUID').innerText = `UID: ${currentUser.uid}`;
+                    document.getElementById('coinBalanceDisplay').innerText = currentUser.balanceCoins;
+                    
+                    document.getElementById('topProfileBar').classList.remove('hidden');
+                    document.getElementById('hudNavigation').classList.remove('hidden');
+                    view('screenLobby');
+                    
+                    if(currentUser.gamerTag.toLowerCase() === 'admin' || currentUser.gamerTag.toLowerCase() === 'owner') {
+                        document.getElementById('btnAdminTrigger').classList.remove('hidden');
+                    }
+                } else { alert(data.error); }
+            } catch (err) { alert("Security gateway unreachable."); }
         });
 
-        // TOURNAMENT SYNCHRONIZED MATRIX LOGIC
-        function seedCaptchaGenerator(seed) {
-            const map = "ABCDEFGHJKLMNOPQRSTUVWXYZ23456789";
-            let res = "", finalSeed = parseInt(tournamentCode) + seed;
+        // ======================== PSEUDO-RANDOM SEED CAPTCHA ARRAY MATRIX ========================
+        function generateUnifiedSharedCaptcha(seed) {
+            const dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZ23456789";
+            let stringOutput = "", computedHashSeed = parseInt(roomToken) + seed;
             for (let i = 0; i < 6; i++) {
-                finalSeed = (finalSeed * 9301 + 49297) % 233280;
-                res += map.charAt(Math.floor((finalSeed / 233280) * map.length));
+                computedHashSeed = (computedHashSeed * 9301 + 49297) % 233280;
+                stringOutput += dictionary.charAt(Math.floor((computedHashSeed / 233280) * dictionary.length));
             }
-            return res.toUpperCase();
+            return stringOutput.toUpperCase();
         }
 
         document.getElementById('btnJoinTournament').addEventListener('click', () => {
-            tournamentCode = document.getElementById('roomCodeInput').value.trim();
-            if(!tournamentCode) return alert("Enter valid Room Token.");
+            roomToken = document.getElementById('roomCodeInput').value.trim();
+            if(!roomToken || isNaN(roomToken)) return alert("Enter valid numeric Room Key token.");
             
-            socket.emit('join_arena_lobby', { matchId: tournamentCode });
-            document.getElementById('lobbyStatus').innerText = `LOBBY CONNECTED: CODE [ ${tournamentCode} ]`;
-            document.getElementById('lobbyStatus').className = "text-xs font-black text-cyan-400 tracking-wider animate-pulse";
+            socket.emit('join_arena_lobby', { matchId: roomToken });
+            document.getElementById('lobbyStatus').innerText = `CONNECTED TO TUNNEL ADAPTER NODE: [ ${roomToken} ]`;
+            document.getElementById('lobbyStatus').className = "text-xs font-black text-cyan-400 tracking-wider animate-pulse mt-2";
         });
 
         document.getElementById('btnAdminTrigger').addEventListener('click', () => {
-            socket.emit('request_match_text', { matchId: tournamentCode });
+            socket.emit('request_match_text', { matchId: roomToken });
         });
 
         socket.on('inject_secure_text', () => {
             view('screenBattle');
-            let preGameClock = 4;
-            document.getElementById('captchaDisplay').innerText = `SYNCING HARDWARE...`;
+            let sequenceSyncTime = 4;
+            document.getElementById('captchaDisplay').innerText = `STABILIZING CLOCK...`;
             
-            let cdId = setInterval(() => {
-                preGameClock--;
-                if(preGameClock <= 0) {
-                    clearInterval(cdId);
-                    executeLiveBattleCore();
+            let countdownId = setInterval(() => {
+                sequenceSyncTime--;
+                if(sequenceSyncTime <= 0) {
+                    clearInterval(countdownId);
+                    launchSynchronizedEngine();
                 } else {
-                    document.getElementById('captchaDisplay').innerText = `BATTLE IN ${preGameClock}`;
+                    document.getElementById('captchaDisplay').innerText = `MATCH STARTS IN ${sequenceSyncTime}`;
                 }
             }, 1000);
         });
@@ -210,86 +225,92 @@
             document.getElementById('liveLeader').innerText = `${user} (${reason} CP)`;
         });
 
-        function executeLiveBattleCore() {
-            activeBattleState = true; clock = 60; totalSolved = 0; seedIndex = 1;
+        function launchSynchronizedEngine() {
+            executionActiveState = true; countdownTime = 60; totalCleared = 0; activeSeedValue = 1;
             document.getElementById('battleTyper').disabled = false;
             document.getElementById('battleTyper').value = "";
             document.getElementById('battleTyper').focus();
             
-            currentCode = seedCaptchaGenerator(seedIndex);
-            document.getElementById('captchaDisplay').innerText = currentCode;
+            currentTargetCaptcha = generateUnifiedSharedCaptcha(activeSeedValue);
+            document.getElementById('captchaDisplay').innerText = currentTargetCaptcha;
 
-            clockIntervalId = setInterval(() => {
-                clock--;
-                document.getElementById('matchClock').innerText = `TIME: ${clock}s`;
+            intervalSequenceId = setInterval(() => {
+                countdownTime--;
+                document.getElementById('matchClock').innerText = `TIMER: ${countdownTime}s`;
                 
-                // Humanly Impossible Speed Threshold Check (Anti-Cheat Validation)
-                if(totalSolved > 45) { triggerSelfDisqualification("IMPOSSIBLE HUMAN SPEED DETECTED"); }
+                // CRITICAL HARWARE PROTECTION RULE: Impossible Human Speed Detection Limit
+                if(totalCleared > 45) { executeInstantDisqualification("IMPOSSIBLE KINETIC CAPTCHA SPEEDS (BOT_LIMIT_VIOLATION)"); }
                 
-                if(clock <= 0) evaluationPipelineEnd();
+                if(countdownTime <= 0) terminateMatchNormally();
             }, 1000);
         }
 
+        // INPUT EVENT VALIDATOR ENGINE
         document.getElementById('battleTyper').addEventListener('input', () => {
-            if(!activeBattleState) return;
-            let val = document.getElementById('battleTyper').value.trim().toUpperCase();
+            if(!executionActiveState) return;
+            let typedText = document.getElementById('battleTyper').value.trim().toUpperCase();
             
-            // Check for immediate failure or mismatch
-            if(val.length >= currentCode.length && val !== currentCode) {
-                triggerSelfDisqualification("INCORRECT CAPTCHA CODE MATRIX INPUT");
+            // CRITICAL HARDCORE RULE: Instant Disqualification on Typo/Wrong Input sequence length mismatch
+            if(typedText.length >= currentTargetCaptcha.length && typedText !== currentTargetCaptcha) {
+                executeInstantDisqualification("TYPOGRAPHIC INPUT ERROR MATRIX MISMATCH");
                 return;
             }
 
-            if(val === currentCode) {
-                totalSolved++;
-                document.getElementById('myCounter').innerText = totalSolved;
+            if(typedText === currentTargetCaptcha) {
+                totalCleared++;
+                document.getElementById('myCounter').innerText = totalCleared;
                 document.getElementById('battleTyper').value = "";
                 
-                socket.emit('flag_cheat_violation', { matchId: tournamentCode, user: currentUser.gamerTag, reason: totalSolved });
+                socket.emit('flag_cheat_violation', { matchId: roomToken, user: currentUser.gamerTag, reason: totalCleared });
                 
-                seedIndex++;
-                currentCode = seedCaptchaGenerator(seedIndex);
-                document.getElementById('captchaDisplay').innerText = currentCode;
+                activeSeedValue++;
+                currentTargetCaptcha = generateUnifiedSharedCaptcha(activeSeedValue);
+                document.getElementById('captchaDisplay').innerText = currentTargetCaptcha;
             }
         });
 
-        function triggerSelfDisqualification(cause) {
-            clearInterval(clockIntervalId); activeBattleState = false;
+        function executeInstantDisqualification(stringReason) {
+            clearInterval(intervalSequenceId); executionActiveState = false;
             document.getElementById('battleTyper').disabled = true;
             document.getElementById('captchaDisplay').innerText = "DISQUALIFIED";
-            document.getElementById('captchaDisplay').className = "text-3xl font-black text-red-500 font-mono";
-            alert(`🚨 LOBBY TERMINATION:\nYou have been DISQUALIFIED.\nReason: ${cause}`);
+            alert(`🛑 CRITICAL HARDWARE VIOLATION:\nYou have been DISQUALIFIED from the lobby session!\nReason: ${stringReason}`);
         }
 
-        function evaluationPipelineEnd() {
-            clearInterval(clockIntervalId); activeBattleState = false;
+        function terminateMatchNormally() {
+            clearInterval(intervalSequenceId); executionActiveState = false;
             document.getElementById('battleTyper').disabled = true;
             
-            // Explicit Multi-tier Pricing Display logic mapped directly from specifications
-            let rankMessage = `Tournament Complete!\nTotal Solved Captchas: ${totalSolved}\n\n`;
-            rankMessage += "🏆 Official Prize Distribution Metrics:\nRank 1: ₹100\nRank 2: ₹50\nRank 3: ₹30\nRank 4-10: ₹20\nRank 11-30: ₹15\nRank 31-50: ₹10";
-            alert(rankMessage);
+            // Exact multi-tier prize validation rule message display mapping instructions
+            let resultsText = `🏆 Match Concluded Successfully!\nYour Score: ${totalCleared} Solved Captchas\n\n`;
+            resultsText += "Official Prize Pool Multi-Tier Metric:\n";
+            resultsText += "🥇 Rank 1: ₹100\n🥈 Rank 2: ₹50\n🥉 Rank 3: ₹30\n";
+            resultsText += "🎖️ Rank 4-10: ₹20\n🎖️ Rank 11-30: ₹15\n";
+            resultsText += "🎖️ Rank 31-50: ₹10\n🎖️ Rank 51-100: ₹2";
+            
+            alert(resultsText);
         }
 
-        // FINANCIAL DISPATCH TRANSACTIONS
-        async function sendWalletPayload(type, amount, upiId) {
-            if(!amount || amount <= 0) return alert("Invalid entry amount.");
-            const res = await fetch(`${API_URL}/api/wallet/request`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ uid: currentUser.uid, amountINR: amount, type, upiId })
-            });
-            const data = await res.json();
-            alert(data.message);
+        // ======================== WALLET LEDGER DISPATCH DISPATCHERS ========================
+        async function sendWalletPayloadRequest(transactionType, amountValue, receiverUpiId) {
+            if(!amountValue || amountValue <= 0) return alert("Invalid cash tracking amount parameter.");
+            try {
+                const res = await fetch(`${API_URL}/api/wallet/request`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ uid: currentUser.uid, amountINR: amountValue, type: transactionType, upiId: receiverUpiId })
+                });
+                const data = await res.json();
+                alert(data.message);
+            } catch(err) { alert("Ledger pipeline request error."); }
         }
 
-        document.getElementById('btnSubmitDeposit').addEventListener('click', () => { sendWalletPayload('DEPOSIT', parseFloat(document.getElementById('depAmount').value), ""); });
-        document.getElementById('btnSubmitWithdraw').addEventListener('click', () => { sendWalletPayload('WITHDRAWAL', parseFloat(document.getElementById('withAmount').value), document.getElementById('withUpi').value.trim()); });
+        document.getElementById('btnSubmitDeposit').addEventListener('click', () => { sendWalletPayloadRequest('DEPOSIT', parseFloat(document.getElementById('depAmount').value), ""); });
+        document.getElementById('btnSubmitWithdraw').addEventListener('click', () => { sendWalletPayloadRequest('WITHDRAWAL', parseFloat(document.getElementById('withAmount').value), document.getElementById('withUpi').value.trim()); });
 
-        // HARDCORE HARDWARE ANTI-CHEAT SHIELD HOOKS
-        window.addEventListener('blur', () => { if(activeBattleState) triggerSelfDisqualification("TAB SWITCH DETECTION DETECTED"); });
+        // ======================== STRICT HARDWARE ANTI-CHEAT ENGINE LAYERS ========================
+        window.addEventListener('blur', () => { if(executionActiveState) executeInstantDisqualification("HARDWARE DEVICE SWITCH OR NOTIFICATION LOSE FOCUS DETECTED"); });
         document.addEventListener('contextmenu', e => e.preventDefault());
-        document.onkeydown = (e) => { if (e.ctrlKey && (e.key === 'c' || e.key === 'v')) { e.preventDefault(); triggerSelfDisqualification("COPY PASTE ATTACK DETECTED"); } };
+        document.onkeydown = (e) => { if (e.ctrlKey && (e.key === 'c' || e.key === 'v')) { e.preventDefault(); executeInstantDisqualification("MALICIOUS CLIPBOARD INJECTION COPY_PASTE ATTACK"); } };
     </script>
 </body>
 </html>
